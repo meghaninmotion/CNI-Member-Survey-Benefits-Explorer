@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNI Fall 2024 Member Survey</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --surface2: #ede9e1;
+    --ink: #1a1916;
+    --ink2: #6b6860;
+    --ink3: #a09d97;
+    --accent: #2e4a3e;
+    --accent-light: #d8e8df;
+    --rule: rgba(26,25,22,0.10);
+    --teal: #1D9E75;
+    --blue: #378ADD;
+    --pink: #D4537E;
+    --amber: #BA7517;
+    --teal-lt: #e1f5ee;
+    --blue-lt: #e6f1fb;
+    --pink-lt: #fbeaf0;
+    --amber-lt: #faeeda;
+    --r: 10px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 36px 48px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    right: 40px; top: 30px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+  }
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 20px;
+    max-width: 540px;
+  }
+  .header-title em {
+    font-style: italic;
+    color: rgba(255,255,255,0.7);
+  }
+  .stat-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 2px; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: #fff;
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.04em; }
+  .stat-div { width: 1px; background: rgba(255,255,255,0.15); align-self: stretch; }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 40px 48px 60px; }
+
+  /* TABS */
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1.5px solid var(--rule);
+    margin-bottom: 36px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    padding: 10px 20px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: color .18s, border-color .18s;
+    letter-spacing: 0.01em;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab-pane { display: none; animation: fadeIn .22s ease; }
+  .tab-pane.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 14px;
+  }
+
+  /* LEGEND ROW */
+  .legend-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink2); }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* CHARTS */
+  .chart-wrap { position: relative; }
+
+  /* TENURE FILTER PILLS */
+  .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 22px; }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--ink2);
+    cursor: pointer;
+    transition: all .15s;
+    font-weight: 400;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+
+  /* VENN CARDS */
+  .venn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  .venn-card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    padding: 20px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    transition: box-shadow .18s;
+  }
+  .venn-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .venn-rank {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 12px;
+    align-self: flex-start;
+  }
+  .venn-svg-wrap { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
+  .venn-labels { font-size: 11px; color: var(--ink2); text-align: center; line-height: 1.5; margin-bottom: 10px; min-height: 28px; }
+  .venn-pct { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--ink); line-height: 1; }
+  .venn-n { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+  /* LEGEND FULL */
+  .venn-legend { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+  .venn-legend-item { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--ink2); }
+  .venn-legend-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; opacity: 0.75; }
+
+  /* FOOTNOTE */
+  .footnote {
+    font-size: 12px;
+    color: var(--ink3);
+    line-height: 1.65;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .header { padding: 28px 24px 24px; }
+    .main { padding: 28px 24px 48px; }
+    .venn-grid { grid-template-columns: 1fr; }
+    .stat-row { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p class="header-eyebrow">Coalition for Networked Information</p>
+  <h1 class="header-title">Fall 2024<br><em>Member Survey</em></h1>
+  <div class="stat-row">
+    <div class="stat-item"><span class="stat-num">180</span><span class="stat-label">Responses</span></div>
+    <div class="stat-div"></div>
+    <div class="stat-item"><span class="stat-num" style="color:#9fe1cb;">48%</span><span class="stat-label">Excellent</span></div>
+    <div class="stat-item"><span class="stat-num" style="color:#b5d4f4;">44%</span><span class="stat-label">Good</span></div>
+    <div class="stat-item"><span class="stat-num" style="color:#fac775;">8%</span><span class="stat-label">Fair</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" onclick="showTab('ratings',this)" role="tab">Value ratings</button>
+    <button class="tab-btn" onclick="showTab('benefits',this)" role="tab">Benefit mentions</button>
+    <button class="tab-btn" onclick="showTab('venn',this)" role="tab">Benefit combinations</button>
+  </nav>
+
+  <!-- TAB 1: VALUE RATINGS -->
+  <div id="tab-ratings" class="tab-pane active">
+    <p class="section-label">Overall value rating by membership tenure</p>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-swatch" style="background:#1D9E75;"></span>Excellent</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#378ADD;"></span>Good</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#BA7517;"></span>Fair</span>
+    </div>
+    <div class="chart-wrap" style="height:280px;">
+      <canvas id="valueChart" role="img" aria-label="Stacked bar chart of value ratings by tenure group"></canvas>
+    </div>
+  </div>
+
+  <!-- TAB 2: BENEFIT MENTIONS -->
+  <div id="tab-benefits" class="tab-pane">
+    <p class="section-label">Benefit mention rate</p>
+    <div class="filter-row" id="ben-filters">
+      <button class="filter-btn active" onclick="setBenTenure(this,'all')">All members</button>
+      <button class="filter-btn" onclick="setBenTenure(this,'0-5 years')">0–5 yrs</button>
+      <button class="filter-btn" onclick="setBenTenure(this,'6-10 years')">6–10 yrs</button>
+      <button class="filter-btn" onclick="setBenTenure(this,'11-20 years')">11–20 yrs</button>
+      <button class="filter-btn" onclick="setBenTenure(this,'20+ years')">20+ yrs</button>
+      <button class="filter-btn" onclick="setBenTenure(this,'Not sure')">Not sure</button>
+    </div>
+    <div class="legend-row">
+      <span class="legend-item"><span class="legend-swatch" style="background:#378ADD;"></span>CNI meetings</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#1D9E75;"></span>Networking</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#D4537E;"></span>Collaboration</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#BA7517;"></span>Trends & info</span>
+    </div>
+    <div class="chart-wrap" style="height:220px;">
+      <canvas id="benefitChart" role="img" aria-label="Horizontal bar chart of benefit mention rates"></canvas>
+    </div>
+  </div>
+
+  <!-- TAB 3: VENN -->
+  <div id="tab-venn" class="tab-pane">
+    <p class="section-label">Top 3 benefit combinations by tenure</p>
+    <div class="filter-row" id="venn-filters">
+      <button class="filter-btn active" onclick="setVennTenure(this,'0-5 years')">0–5 yrs</button>
+      <button class="filter-btn" onclick="setVennTenure(this,'6-10 years')">6–10 yrs</button>
+      <button class="filter-btn" onclick="setVennTenure(this,'11-20 years')">11–20 yrs</button>
+      <button class="filter-btn" onclick="setVennTenure(this,'20+ years')">20+ yrs</button>
+      <button class="filter-btn" onclick="setVennTenure(this,'Not sure')">Not sure</button>
+    </div>
+    <div class="venn-grid" id="venn-grid"></div>
+    <div class="venn-legend" id="venn-legend"></div>
+    <p class="footnote">Survey respondents could select more than one benefit. These diagrams show the three most frequent combinations of benefits selected by members in this tenure group when asked what aspects of CNI membership most benefit their institution.</p>
+  </div>
+</div>
+
+<script>
+const RAW=[
+{t:'0-5 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Fair',b:['Trends','Meetings']},
+{t:'0-5 years',v:'Fair',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'0-5 years',v:'Good',b:['Trends','Collaboration','Networking']},
+{t:'0-5 years',v:'Good',b:['Meetings']},
+{t:'0-5 years',v:'Good',b:['Meetings','Collaboration']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'0-5 years',v:'Fair',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Collaboration','Networking']},
+{t:'0-5 years',v:'Good',b:['Trends','Meetings']},
+{t:'0-5 years',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'0-5 years',v:'Good',b:['Meetings','Collaboration']},
+{t:'0-5 years',v:'Fair',b:['Collaboration']},
+{t:'0-5 years',v:'Good',b:['Meetings']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Good',b:['Trends','Meetings']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Good',b:['Trends','Collaboration']},
+{t:'0-5 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'0-5 years',v:'Good',b:['Meetings']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'0-5 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Fair',b:['Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Meetings']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Excellent',b:['Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Meetings']},
+{t:'6-10 years',v:'Fair',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Fair',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'6-10 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Good',b:['Trends','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'6-10 years',v:'Good',b:['Trends','Meetings']},
+{t:'6-10 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Fair',b:['Networking']},
+{t:'11-20 years',v:'Fair',b:['Collaboration','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Other','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Meetings','Collaboration']},
+{t:'11-20 years',v:'Good',b:['Meetings']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings']},
+{t:'11-20 years',v:'Excellent',b:['Meetings','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Excellent',b:['Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Good',b:['Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'11-20 years',v:'Good',b:['Trends']},
+{t:'11-20 years',v:'Good',b:['Trends','Collaboration']},
+{t:'20+ years',v:'Good',b:['Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Collaboration','Other','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Collaboration']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Collaboration']},
+{t:'20+ years',v:'Excellent',b:['Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'20+ years',v:'Good',b:['Meetings']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Excellent',b:['Meetings','Collaboration']},
+{t:'20+ years',v:'Excellent',b:['Trends']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'20+ years',v:'Excellent',b:['Meetings','Other']},
+{t:'20+ years',v:'Excellent',b:['Trends','Other','Meetings']},
+{t:'20+ years',v:'Good',b:['Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Good',b:['Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Good',b:['Meetings']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'20+ years',v:'Good',b:['Meetings','Networking']},
+{t:'20+ years',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'20+ years',v:'Fair',b:['Trends']},
+{t:'Not sure',v:'Fair',b:['Trends','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Fair',b:['Trends','Other']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings']},
+{t:'Not sure',v:'Excellent',b:['Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Meetings']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Fair',b:['Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Collaboration']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Meetings']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Trends']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Collaboration']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration']},
+{t:'Not sure',v:'Fair',b:['Trends','Networking']},
+{t:'Not sure',v:'Excellent',b:['Meetings','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Collaboration','Networking']},
+{t:'Not sure',v:'Excellent',b:['Trends','Meetings','Collaboration','Networking']},
+{t:'Not sure',v:'Good',b:['Trends','Meetings']},
+];
+
+const TENURES=['0-5 years','6-10 years','11-20 years','20+ years','Not sure'];
+const TL={'0-5 years':'0–5 yrs','6-10 years':'6–10 yrs','11-20 years':'11–20 yrs','20+ years':'20+ yrs','Not sure':'Not sure'};
+const BENS=['Meetings','Networking','Collaboration','Trends'];
+const BCOLS=['#378ADD','#1D9E75','#D4537E','#BA7517'];
+const CMAP={Meetings:'#378ADD',Networking:'#1D9E75',Collaboration:'#D4537E',Trends:'#BA7517'};
+const BEN_FULL={Meetings:'CNI member meetings',Networking:'Networking opportunities',Collaboration:'Collaboration opportunities',Trends:'Access to emerging trends & information'};
+const BEN_SHORT={Meetings:'CNI meetings',Networking:'Networking',Collaboration:'Collaboration',Trends:'Trends & info'};
+
+function rows(tenure){return tenure==='all'?RAW:RAW.filter(r=>r.t===tenure);}
+
+/* ---- TAB SWITCHING ---- */
+function showTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='benefits'&&!benChartBuilt){buildBenefitChart('all');benChartBuilt=true;}
+}
+
+/* ---- VALUE RATINGS CHART ---- */
+(function(){
+  const labels=TENURES.map(t=>TL[t]);
+  const exc=[],goo=[],fai=[];
+  TENURES.forEach(t=>{
+    const rs=RAW.filter(r=>r.t===t),n=rs.length;
+    exc.push(Math.round(rs.filter(r=>r.v==='Excellent').length/n*100));
+    goo.push(Math.round(rs.filter(r=>r.v==='Good').length/n*100));
+    fai.push(Math.round(rs.filter(r=>r.v==='Fair').length/n*100));
+  });
+  new Chart(document.getElementById('valueChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Excellent',data:exc,backgroundColor:'#1D9E75',borderRadius:3,borderSkipped:false},
+      {label:'Good',data:goo,backgroundColor:'#378ADD',borderRadius:3,borderSkipped:false},
+      {label:'Fair',data:fai,backgroundColor:'#BA7517',borderRadius:3,borderSkipped:false},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{font:{size:12,family:'DM Sans'},color:'#a09d97'}},
+        y:{stacked:true,max:100,ticks:{callback:v=>v+'%',font:{size:11,family:'DM Sans'},color:'#a09d97'},grid:{color:'rgba(26,25,22,0.06)'}},
+      }
+    }
+  });
+})();
+
+/* ---- BENEFIT MENTIONS CHART ---- */
+let bChart, benChartBuilt=false;
+function buildBenefitChart(tenure){
+  const rs=rows(tenure),n=rs.length;
+  const data=BENS.map(b=>Math.round(rs.filter(r=>r.b.includes(b)).length/n*100));
+  if(bChart)bChart.destroy();
+  bChart=new Chart(document.getElementById('benefitChart'),{
+    type:'bar',
+    data:{labels:BENS.map(b=>BEN_SHORT[b]),
+      datasets:[{label:'% mentioning',data,backgroundColor:BCOLS,borderRadius:3,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+'% of respondents'}}},
+      scales:{
+        x:{max:100,ticks:{callback:v=>v+'%',font:{size:11,family:'DM Sans'},color:'#a09d97'},grid:{color:'rgba(26,25,22,0.06)'}},
+        y:{grid:{display:false},ticks:{font:{size:12,family:'DM Sans'},color:'#6b6860'}},
+      }
+    }
+  });
+}
+function setBenTenure(btn,tenure){
+  document.getElementById('ben-filters').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildBenefitChart(tenure);
+}
+
+/* ---- VENN DIAGRAMS ---- */
+function topCombos(rs,n=3){
+  const freq={};
+  rs.forEach(r=>{
+    const core=r.b.filter(x=>BENS.includes(x));
+    const key=[...core].sort().join('+');
+    if(key) freq[key]=(freq[key]||0)+1;
+  });
+  return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,n);
+}
+
+function makeSvgVenn(bens){
+  const W=160, H=120;
+  const cx=W/2, cy=H/2-6;
+  const r=bens.length===1?36:bens.length===2?32:bens.length===3?28:24;
+  const offsets={
+    1:[{x:0,y:0}],
+    2:[{x:-20,y:0},{x:20,y:0}],
+    3:[{x:-22,y:-12},{x:22,y:-12},{x:0,y:16}],
+    4:[{x:-22,y:-14},{x:22,y:-14},{x:-22,y:14},{x:22,y:14}],
+  };
+  const cfg=offsets[Math.min(bens.length,4)];
+  const circles=cfg.map((c,i)=>{
+    const col=CMAP[bens[i]]||'#888';
+    return `<circle cx="${cx+c.x}" cy="${cy+c.y}" r="${r}" fill="${col}" fill-opacity="0.22" stroke="${col}" stroke-width="1.5"/>`;
+  }).join('');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${circles}</svg>`;
+}
+
+function renderVenn(tenure){
+  const rs=rows(tenure), n=rs.length;
+  const top3=topCombos(rs,3);
+  const usedBens=new Set();
+  const rankLabels=['#1 most common','#2 most common','#3 most common'];
+
+  const grid=document.getElementById('venn-grid');
+  grid.innerHTML='';
+  top3.forEach(([key,cnt],i)=>{
+    const bens=key.split('+');
+    bens.forEach(b=>usedBens.add(b));
+    const pct=Math.round(cnt/n*100);
+    const shortNames=bens.map(b=>BEN_SHORT[b]||b);
+    const labelText=shortNames.length<=2
+      ? shortNames.join(' + ')
+      : shortNames.slice(0,2).join(' + ')+'<br>+ '+shortNames.slice(2).join(' + ');
+
+    const card=document.createElement('div');
+    card.className='venn-card';
+    card.innerHTML=`
+      <div class="venn-rank">${rankLabels[i]}</div>
+      <div class="venn-svg-wrap">${makeSvgVenn(bens)}</div>
+      <div class="venn-labels">${labelText}</div>
+      <div class="venn-pct">${pct}%</div>
+      <div class="venn-n">n = ${cnt} of ${n}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  const legendEl=document.getElementById('venn-legend');
+  legendEl.innerHTML=BENS
+    .filter(b=>usedBens.has(b))
+    .map(b=>`<div class="venn-legend-item">
+      <span class="venn-legend-dot" style="background:${CMAP[b]};"></span>
+      <span>${BEN_FULL[b]}</span>
+    </div>`).join('');
+}
+
+function setVennTenure(btn,tenure){
+  document.getElementById('venn-filters').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVenn(tenure);
+}
+
+renderVenn('0-5 years');
+</script>
+</body>
+</html>
