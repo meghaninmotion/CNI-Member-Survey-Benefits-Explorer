@@ -1,7 +1,7 @@
-# CNI-Member-Survey-Benefits
+# CNI-Member-Survey-Benefits-Explorer
 A prototype visualization of member survey responses about benefits CNI provides to their institution
 
-This visualization presents analysis of CNI member survey data gathered in Fall 2024 prior to the Fall 2024 CNI meeting. This visualizaton offers two views that offer lenses on the complex landscape of CNI members: membership tenure and organizational role. 
+This multi-tab exploration presents analysis of CNI member survey data gathered in Fall 2024 prior to the Fall 2024 CNI meeting. This visualizaton offers three tabs cumulating perspectives on CNI's benefits and overall value to CNI members. 
 
 The data are aggregated from 180 responses, which may or may not correspond to meeting attendance that year. This volume of responses could be estimated somewhere between 25-40% of member organization representatives, and is shared here to begin an exploration of the array of perspectives members hold about CNI's value to individual organizations and the wider community. It is appropriate to consider the dataset underlying this visualization as an incomplete view of member perspectives. However, the emergent themes represent some of the aligned and conflicting stances of CNI members about the ways CNI could offer greater value in the future. This visualization is presented as starting point to explore variables that may have impacted deeper engagement and member experiences. Respondents were always anonymous but the role and tenure information have been separated for this view. 
 
